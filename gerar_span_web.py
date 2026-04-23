@@ -515,17 +515,22 @@ with st.sidebar:
     k1_val = st.number_input("跨ぎ歯数 k1", value=3, step=1, min_value=1)
     k2_val = st.number_input("跨ぎ歯数 k2", value=4, step=1, min_value=1)
 
-    # 自動計算のデフォルト値
+    # 上流パラメータが変わったらW1/W2/aを自動リセットするためのキー
+    _up = f"{m_val}_{alpha_val}_{z1_val}_{z2_val}_{x1_val}_{x2_val}_{k1_val}_{k2_val}"
+
     W1_default = span_from_xeff(x1_val, k1_val, m_val, z1_val, alpha_val)
     W2_default = span_from_xeff(x2_val, k2_val, m_val, z2_val, alpha_val)
 
-    W1_val = st.number_input("跨ぎ歯厚 W1 [mm]", value=W1_default, step=0.001, format="%.4f")
-    W2_val = st.number_input("跨ぎ歯厚 W2 [mm]", value=W2_default, step=0.001, format="%.4f")
+    W1_val = st.number_input("跨ぎ歯厚 W1 [mm]", value=W1_default, step=0.001,
+                              format="%.4f", key=f"W1_{_up}")
+    W2_val = st.number_input("跨ぎ歯厚 W2 [mm]", value=W2_default, step=0.001,
+                              format="%.4f", key=f"W2_{_up}")
 
     st.divider()
     st.subheader("軸間距離")
     a_default = center_distance_design(m_val, z1_val, z2_val, x1_val, x2_val)
-    a_val = st.number_input("軸間距離 a [mm]", value=a_default, step=0.001, format="%.6f")
+    a_val = st.number_input("軸間距離 a [mm]", value=a_default, step=0.001,
+                             format="%.6f", key=f"a_{_up}")
 
     st.divider()
     g2rot_val = st.number_input("G2追加回転 [deg]", value=0.0, step=0.01, format="%.4f")
