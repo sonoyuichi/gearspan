@@ -5,11 +5,27 @@ GearMesh Viewer - 平歯車バックラッシ計算＋かみ合い描画 (Stream
 """
 import math
 import streamlit as st
+import matplotlib
+matplotlib.use('Agg')  # non-interactive backend for Cloud
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.patches import Polygon as MplPolygon
 from matplotlib.collections import PatchCollection
 import numpy as np
+
+# 日本語フォント設定（Cloud環境対応）
+try:
+    import matplotlib.font_manager as fm
+    # Linux (Streamlit Cloud) で利用可能な日本語フォントを探す
+    _jp_fonts = [f.name for f in fm.fontManager.ttflist
+                 if any(k in f.name.lower() for k in ['gothic', 'noto', 'ipa', 'takao', 'meiryo'])]
+    if _jp_fonts:
+        plt.rcParams['font.family'] = _jp_fonts[0]
+    else:
+        # フォントが無い場合はsans-serifで代替（日本語は文字化けの可能性あり）
+        plt.rcParams['font.family'] = 'sans-serif'
+except Exception:
+    pass
 
 # =========================
 # JIS寄せ inv
@@ -455,8 +471,7 @@ def draw_gear_mesh_mpl(m, z1, z2, x1, x2, alpha_deg, jt_um,
     info_text = (f"G1: z={int(z1)}, x={x1:.3f}  |  G2: z={int(z2)}, x={x2:.3f}  |  "
                  f"m={m}mm  α={alpha_deg}°\n"
                  f"a={a_center:.4f}mm{da_info}  |  jt={jt_um:.1f}µm{g2rot_info}")
-    ax.set_title(info_text, fontsize=8, color='#333333', loc='left', pad=10,
-                 fontfamily='monospace')
+    ax.set_title(info_text, fontsize=8, color='#333333', loc='left', pad=10)
 
     # 干渉警告
     if has_interference:
